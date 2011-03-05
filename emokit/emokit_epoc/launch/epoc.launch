@@ -1,0 +1,3 @@
+<launch>
+  <node name="epocd_node" pkg="emokit_epoc" type="epocd" args="research /dev/eeg/encrypted /dev/eeg/raw" />
+</launch>
