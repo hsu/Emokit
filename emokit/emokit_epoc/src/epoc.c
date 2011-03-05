@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "libepoc.h"
+#include "emokit_epoc/libepoc.h"
 
 #define KEYSIZE 16 /* 128 bits == 16 bytes */
 

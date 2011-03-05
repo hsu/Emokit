@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "libepoc.h"
+#include "emokit_epoc/libepoc.h"
    
 
 int main(int argc, char **argv)
