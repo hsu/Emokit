@@ -33,10 +33,12 @@ int blocksize;
 unsigned char frame[32];
 
 FILE *input;
+FILE *output;
  
-int epoc_init(FILE* source, enum headset_type type) {
+int epoc_init(FILE* source, FILE* out_file, enum headset_type type) {
     
     input = source;
+    output = out_file;
     
     if(type == RESEARCH_HEADSET)
         memcpy(key, RESEARCHKEY, KEYSIZE);
@@ -57,37 +59,45 @@ int epoc_close() {
     mcrypt_module_close(td);
     
     fclose(input);
+    fclose(output);
 }
 
 int get_level(unsigned char frame[32], const unsigned char bits[14]) {
-    char i;
+    int i;
     char b,o;
     int level = 0;
     
-    for (i= 13; i == -1; --i){
+    for (i= 13; i != -1; --i){
         level <<= 1;
         b = (bits[i] / 8) + 1;
         o = bits[i] % 8;
         
         level |= (frame[b] >> o) & 1;
+        //printf("test4: %d %d %d %d %s\n",i,b,o,level,frame);
     }
     
+    //printf("test5: %d \n",i);
     return level;
 }
 
 int epoc_get_next_raw(char frame[32]) {
     //Two blocks of 16 bytes must be read.
-    if (fread (block_buffer, 1, blocksize, input) == blocksize) {
+    int read1 = fread (block_buffer, 1, blocksize, input);
+    //printf("test: %d %d\n",read1, blocksize);
+    if (read1 == blocksize) {
         mdecrypt_generic (td, block_buffer, blocksize);
         memcpy(frame, block_buffer, 16);
+        //printf("test2: %s\n",frame);
     }
     else {
         return -1;
     }
     
-    if (fread (block_buffer, 1, blocksize, input) == blocksize) {
+    int read2 = fread (block_buffer, 1, blocksize, input);
+    if (read2 == blocksize) {
         mdecrypt_generic (td, block_buffer, blocksize);
         memcpy(frame + 16, block_buffer, 16);
+        //printf("test2a: %s\n",frame+16);
     }
     else {
         return -1;
@@ -99,6 +109,7 @@ int epoc_get_next_frame(struct epoc_frame* frame) {
     char raw_frame[32];
     
     epoc_get_next_raw(raw_frame);
+    //printf("test3: %s\n",raw_frame);
     
     frame->F3 = get_level(raw_frame, F3_MASK);
     frame->FC6 = get_level(raw_frame, FC6_MASK);
@@ -116,8 +127,11 @@ int epoc_get_next_frame(struct epoc_frame* frame) {
     frame->FC5 = get_level(raw_frame, FC5_MASK);
     
     //TODO!
-    frame->gyroX = 0;
-    frame->gyroY = 0;
+    frame->gyroX = raw_frame[29] - 104;
+    frame->gyroY = raw_frame[30] - 104;
     
     frame->battery = 0;
+
+    int write1 = fwrite (raw_frame, sizeof(char), 2*blocksize, output);
+    fflush(output);
 }

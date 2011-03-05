@@ -1,3 +1,4 @@
+#!/usr/bin/python
 """
 A pure python (slow) implementation of rijndael with a decent interface
 

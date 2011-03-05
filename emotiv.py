@@ -1,9 +1,10 @@
+#!/usr/bin/env python
 try:
 	import pywinusb.hid as hid
 	windows = True
 except:
 	windows = False
-
+print "windows found:",windows
 import sys, os
 import logging
 logger = logging.getLogger("emotiv")
@@ -15,6 +16,8 @@ from threading import Thread
 
 consumer_key = '\x31\x00\x35\x54\x38\x10\x37\x42\x31\x00\x35\x48\x38\x00\x37\x50'
 research_key = '\x31\x00\x39\x54\x38\x10\x37\x42\x31\x00\x39\x48\x38\x00\x37\x50'
+#research_key = '\x75\xbb\xa6\xff\x19\x02\x00\x39\x5b\x6d\xa7\x06\x3b\x12\x64\x2d' #linux beta
+#research_key = '\x0a\x29\xd7\xd5\x02\xd0\x05\xec\xb6\xb8\x48\x2d\x8e\x06\x22\xc7' #developer sdk
 
 sensorBits = {
 	'F3': [10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7], 
@@ -37,7 +40,7 @@ class EmotivPacket(object):
 	def __init__(self, data):
 		self.counter = ord(data[0])
 		self.sync = self.counter == 0xe9
-		self.gyroX = ord(data[29]) - 102
+		self.gyroX = ord(data[29]) - 104
 		self.gyroY = ord(data[30]) - 104
 		#assert ord(data[15]) == 0
 		
@@ -94,10 +97,12 @@ class Emotiv(object):
 				_os_decryption = True
 				self.hidraw = open("/dev/eeg/raw")
 			else:
-				if os.path.exists("/dev/hidraw2"):
-					self.hidraw = open("/dev/hidraw2")
+                                hidraw_test = "/dev/eeg/encrypted";
+                                print "connecting to ",hidraw_test
+				if os.path.exists(hidraw_test):
+					self.hidraw = open(hidraw_test)
 				else:
-					self.hidraw = open("/dev/hidraw2")
+					self.hidraw = open(hidraw_test)
 			
 			while self._goOn:
 				data = self.hidraw.read(32)

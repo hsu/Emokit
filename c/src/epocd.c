@@ -34,28 +34,30 @@ int main(int argc, char **argv)
     type = CONSUMER_HEADSET;
 
   input = fopen(argv[2], "rb");
+  printf("source: %s\n",argv[2]);
   if (input == NULL)
   {
     fputs("File read error: couldn't open the EEG source!", stderr);
     return 1;
   }
   
-  epoc_init(input, type);
-  
   if (argc == 3) {
       output = stdout;
   } else {
       output = fopen(argv[3], "wb");
-      if (input == NULL)
+      printf("destination: %s\n",argv[3]);
+      if (output == NULL)
       {
         fputs("File write error: couldn't open the destination file for uncrypted data", stderr);
         return 1;
       }
   }
 
+  epoc_init(input,output, type);
+  
   while ( 1 ) {
       epoc_get_next_frame(&frame);
-      printf("F3: %d\n", frame.F3);
+      printf("%d %d %d %d %d\n", frame.gyroX, frame.gyroY, frame.F3, frame.FC6, frame.P7);
       fflush(stdout);
   }
 

@@ -1,5 +1,10 @@
+#!/usr/bin/python
 import time
-import pywinusb.hid as hid
+try:
+	import pywinusb.hid as hid
+	windows = True
+except:
+	windows = False
 
 from aes import rijndael
 
