@@ -1,0 +1,14 @@
+<package>
+  <description brief="emokit_epoc">
+
+     emokit_epoc
+
+  </description>
+  <author>John</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/emokit_epoc</url>
+
+</package>
+
+

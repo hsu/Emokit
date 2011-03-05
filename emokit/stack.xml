@@ -1,0 +1,9 @@
+<stack>
+  <description brief="emokit">emokit</description>
+  <author>Maintained by John</author>
+  <license>BSD</license>  
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/emokit</url>
+  <depend stack="ros" />
+
+</stack>
